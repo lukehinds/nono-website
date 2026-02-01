@@ -3,9 +3,9 @@ import { ArrowRight } from "lucide-react";
 
 export default function Hero() {
   return (
-    <section className="pt-32 pb-24 px-6">
+    <section className="min-h-screen flex items-center justify-center px-6">
       <div className="max-w-5xl mx-auto text-center">
-        <div className="flex justify-center mb-8">
+        {/* <div className="flex justify-center mb-8">
           <Image
             src="/nono-mascot.png"
             alt="NONO mascot"
@@ -13,9 +13,10 @@ export default function Hero() {
             height={800}
             priority
           />
-        </div>
+        </div> */}
 
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-4">
+        <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-4">
+          nono: OS-Level <br />
           Isolation for AI Agents.
         </h1>
 

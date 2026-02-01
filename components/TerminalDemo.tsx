@@ -1,43 +1,98 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
+
+const examples = [
+  {
+    command: "nono run cat .ssh/id_rsa",
+    output: [
+      "Sandbox active. Restrictions are now in effect",
+      "cat: .ssh/id_rsa: Operation not permitted"
+    ],
+  },
+  {
+    command: "nono run ~/.npm -- npm install evil-pkg",
+    output: [
+       "Sandbox active. Restrictions are now in effect",
+      "[postinstall] Attempting to read ~/.ssh/id_rsa...",
+      "read: ~/.ssh/id_rsa Operation not permitted",
+    ],
+  },
+  {
+    command: "nono run openclaw gateway",
+    output: [
+       "Sandbox active. Restrictions are now in effect",
+       "🦞 OpenClaw 2026.1.29 (a5b4d22) — Your task has been queued; your dignity has been deprecated.",
+       "11:07:46 [ws] ⇄ res ✓ channels.status 103ms conn=753.. id=001f..",
+       "11:09:25 [tools] exec failed: rm -rf: ~/ Operation not permitted",
+    ],
+  },
+  {
+    command: "nono run claude",
+    output: [
+       "Sandbox active. Restrictions are now in effect",
+       "⏺ Let me clean up the old files for you.",
+       "⏺ Bash(rm -rf ~/)",
+       "rm: ~/denied: Permission denied",
+    ],
+  },
+];
+
+const longestOutput = examples.reduce(
+  (max, ex) => Math.max(max, ex.output.length),
+  0
+);
 
 export default function TerminalDemo() {
   const [displayedCommand, setDisplayedCommand] = useState("");
-  const [showOutput, setShowOutput] = useState(false);
+  const [visibleLines, setVisibleLines] = useState(0);
   const [showCursor, setShowCursor] = useState(true);
+  const [exampleIndex, setExampleIndex] = useState(0);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  const command = "nono run cat .ssh/id_rsa";
-  const output = "cat: .ssh/id_rsa: Operation not permitted";
+  const currentExample = examples[exampleIndex];
 
   const runAnimation = useCallback(() => {
     setDisplayedCommand("");
-    setShowOutput(false);
+    setVisibleLines(0);
     setShowCursor(true);
 
     let charIndex = 0;
-    const typingInterval = setInterval(() => {
+    const command = examples[exampleIndex].command;
+    const outputLines = examples[exampleIndex].output;
+
+    intervalRef.current = setInterval(() => {
       if (charIndex < command.length) {
         setDisplayedCommand(command.slice(0, charIndex + 1));
         charIndex++;
       } else {
-        clearInterval(typingInterval);
-        setTimeout(() => {
-          setShowOutput(true);
-          setShowCursor(false);
-          setTimeout(() => {
-            runAnimation();
-          }, 3000);
-        }, 500);
+        if (intervalRef.current) clearInterval(intervalRef.current);
+        setShowCursor(false);
+
+        let lineIndex = 0;
+        const showNextLine = () => {
+          if (lineIndex < outputLines.length) {
+            lineIndex++;
+            setVisibleLines(lineIndex);
+            timeoutRef.current = setTimeout(showNextLine, 400);
+          } else {
+            timeoutRef.current = setTimeout(() => {
+              setExampleIndex((prev) => (prev + 1) % examples.length);
+            }, 3000);
+          }
+        };
+        timeoutRef.current = setTimeout(showNextLine, 500);
       }
     }, 80);
-
-    return typingInterval;
-  }, []);
+  }, [exampleIndex]);
 
   useEffect(() => {
-    const interval = runAnimation();
-    return () => clearInterval(interval);
+    runAnimation();
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
   }, [runAnimation]);
 
   return (
@@ -59,9 +114,26 @@ export default function TerminalDemo() {
               )}
             </span>
           </div>
-          <div className={`mt-3 ${showOutput ? "text-red-400" : "invisible"}`}>
-            {output}
-          </div>
+          {Array.from({ length: longestOutput }).map((_, i) => (
+            <div
+              key={i}
+              className={`mt-2 ${
+                i < visibleLines && currentExample.output[i]
+                  ? currentExample.output[i].includes("Sandbox")
+                    ? "text-green-400"
+                    : currentExample.output[i].includes("read:") ||
+                      currentExample.output[i].includes("not permitted") ||
+                      currentExample.output[i].includes("failed") ||
+                      currentExample.output[i].includes("rm") ||
+                      currentExample.output[i].includes("denied")
+                    ? "text-red-400"
+                    : "text-muted"
+                  : "invisible"
+              }`}
+            >
+              {currentExample.output[i] || "\u00A0"}
+            </div>
+          ))}
         </div>
       </div>
     </div>

@@ -21,12 +21,21 @@ export const metadata: Metadata = {
     description:
       "OS-enforced capability sandbox for running untrusted AI agents. No escape hatch. Works with Claude, GPT, and any AI agent.",
     type: "website",
+    images: [
+      {
+        url: "/logo.png",
+        width: 1200,
+        height: 630,
+        alt: "nono - OS-Level Isolation for AI Agents",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "nono - Secure Shell for AI Agents",
     description:
       "OS-enforced capability sandbox for running untrusted AI agents. No escape hatch. Works with Claude, GPT, and any AI agent.",
+    images: ["/logo.png"],
   },
 };
 

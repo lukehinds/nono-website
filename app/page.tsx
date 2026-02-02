@@ -1,7 +1,7 @@
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import OpenClawCTA from "@/components/OpenClawCTA";
-// import AgentLogos from "@/components/AgentLogos";
+import TerminalDemo from "@/components/TerminalDemo";
 import Features from "@/components/Features";
 import HowItWorks from "@/components/HowItWorks";
 import QuickStart from "@/components/QuickStart";
@@ -15,7 +15,7 @@ export default function Home() {
       <main>
         <Hero />
         <OpenClawCTA />
-        {/* <AgentLogos /> */}
+        <TerminalDemo />
         <Features />
         <HowItWorks />
         <QuickStart />

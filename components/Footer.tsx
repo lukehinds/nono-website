@@ -44,7 +44,7 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row items-center justify-between gap-6 pt-8 border-t border-border">
           <div>
             <span className="font-semibold">nono</span>
-            <span className="text-sm text-muted ml-2">by Always Further, Inc</span>
+            <span className="text-sm text-muted ml-2">by <a href="https://alwaysfurther.ai?utm_source=nono-sh" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">Always Further, Inc</a></span>
           </div>
 
           <div className="flex items-center gap-4 text-muted">
